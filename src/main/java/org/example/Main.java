@@ -5,13 +5,13 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
 
-        var hib = new Configuration().configure();
-        SessionFactory factory = hib.buildSessionFactory();
+        var factory = DataProvider.getSessionFactory();
 
         Game game = new Game();
         game.setTitle("Title");
