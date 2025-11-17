@@ -6,12 +6,13 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 
 import javax.xml.crypto.Data;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
 
-        var factory = DataProvider.getSessionFactory();
+        GameRepository gameRepository = new GameRepository(DataProvider.getSessionFactory());
 
         Game game = new Game();
         game.setTitle("Title");
@@ -19,42 +20,17 @@ public class Main {
         game.setDescription("Description");
         game.setYear(2018);
 
-        factory.inTransaction((session) -> {
-            session.persist(game);
+        System.out.println( gameRepository.findById(6L) );
+
+        gameRepository.findAll().forEach(g -> {
+            System.out.println(g.getTitle());
         });
 
+        System.out.println(gameRepository.count());
 
-
-        try(Session session = factory.openSession()) {
-            session.beginTransaction();
-            Game g5 = session.find(Game.class, 5);
-            System.out.println(g5);
-            g5.setTitle("Ciberpun 207777777");
-            session.merge(g5);
-            session.getTransaction().commit();
-            System.out.println(g5);
-        }
-
-
-        factory.inTransaction((session) -> {
-            Game g = session.find(Game.class, 41);
-            if(g != null) session.remove(g);
-        });
-
-        try(Session session = factory.openSession()) {
-            List<Game> games = session.createQuery("from Game").list();
-            games.forEach(System.out::println);
-        }
-
-        System.out.println("------------------------------------");
-        factory.inSession( (session) -> {
-            Query<Game> query = session.createQuery("from Game where year = :year");
-            query.setParameter("year", 1998);
-            List<Game> games = query.getResultList();
-            games.forEach(System.out::println);
-        });
-
-
+        gameRepository.findById(7L).ifPresent(
+                (g)-> gameRepository.delete(g)
+        );
 
     }
 }
