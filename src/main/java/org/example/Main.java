@@ -12,25 +12,25 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
 
-        GameRepository gameRepository = new GameRepository(DataProvider.getSessionFactory());
+        SessionFactory factory = DataProvider.getSessionFactory();
 
-        Game game = new Game();
-        game.setTitle("Title");
-        game.setPlatform("Platform");
-        game.setDescription("Description");
-        game.setYear(2018);
 
-        System.out.println( gameRepository.findById(6L) );
+        User newUser = new User();
+        newUser.setEmail("@@@");
+        newUser.setPassword("password");
 
-        gameRepository.findAll().forEach(g -> {
-            System.out.println(g.getTitle());
-        });
+        Game newGame = new Game();
+        newGame.setTitle("New Game");
+        newGame.setDescription("New Game");
+        newGame.setPlatform("New Game");
 
-        System.out.println(gameRepository.count());
+        newUser.addGame(newGame);
 
-        gameRepository.findById(7L).ifPresent(
-                (g)-> gameRepository.delete(g)
-        );
+        try(Session session = factory.openSession()) {
+            session.beginTransaction();
+            session.persist(newUser);
+            session.getTransaction().commit();
+        }
 
     }
 }
